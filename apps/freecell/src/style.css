@@ -9,21 +9,21 @@
 }
 
 #app .card {
-  padding: 2px 3px;
+  padding: 2px 2px;
 }
 
 #app .card .rank-top,
 #app .card .rank-bottom {
-  font-size: 9px;
+  font-size: 11px;
 }
 
 #app .card .suit-big {
-  font-size: 14px;
+  font-size: 17px;
 }
 
 .table {
   gap: 4px;
-  padding: 6px 6px 12px;
+  padding: 4px 4px 10px;
 }
 
 /* ---- Top row: free cells / foundations ---- */
@@ -32,7 +32,7 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 10px;
+  gap: 6px;
 }
 
 .top-row .pile-label {
@@ -50,7 +50,7 @@
 .freecell-row,
 .foundation-row {
   display: flex;
-  gap: 5px;
+  gap: 3px;
 }
 
 /* ---- Tableau ---- */
@@ -58,7 +58,7 @@
 .tableau-row {
   display: flex;
   flex: 1;
-  gap: 3px;
+  gap: 2px;
   padding-top: 4px;
 }
 

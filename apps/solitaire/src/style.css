@@ -4,26 +4,26 @@
 #app .card,
 #app .card-back,
 #app .pile-slot {
-  width: 46px;
-  height: 66px;
+  width: 50px;
+  height: 71px;
 }
 
 #app .card {
-  padding: 2px 3px;
+  padding: 2px 2px;
 }
 
 #app .card .rank-top,
 #app .card .rank-bottom {
-  font-size: 10px;
+  font-size: 13px;
 }
 
 #app .card .suit-big {
-  font-size: 15px;
+  font-size: 19px;
 }
 
 .table {
   gap: 4px;
-  padding: 6px 6px 12px;
+  padding: 4px 4px 10px;
 }
 
 /* ---- Top row: stock / waste / foundations ---- */
@@ -51,8 +51,8 @@
 
 .waste-fan {
   position: relative;
-  width: 46px;
-  height: 66px;
+  width: 50px;
+  height: 71px;
 }
 
 .waste-fan .waste-slot {
@@ -70,7 +70,7 @@
 .tableau-row {
   display: flex;
   flex: 1;
-  gap: 3px;
+  gap: 2px;
   padding-top: 4px;
 }
 
@@ -90,12 +90,12 @@
 
 .tableau-column .card:not(:first-child),
 .tableau-column .card-back:not(:first-child) {
-  margin-top: -46px;
+  margin-top: -49px;
 }
 
 .tableau-column .pile-slot.empty {
-  width: 46px;
-  height: 66px;
+  width: 50px;
+  height: 71px;
   border-radius: 6px;
 }
 
