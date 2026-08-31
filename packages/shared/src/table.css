@@ -187,6 +187,12 @@ body {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
   transition: transform 0.12s ease, box-shadow 0.12s ease;
   flex-shrink: 0;
+  /* Without its own stacking context, this card's rotated .rank-bottom (which creates one via
+     `transform`) paints in a later, shared layer with every other card's rotated label in the
+     same column/row — after all cards' plain backgrounds, regardless of DOM order — so a covered
+     card's bottom label bleeds through the card stacked on top of it. Isolating each card keeps
+     that label scoped to its own paint order. */
+  isolation: isolate;
 }
 
 .card.red {
