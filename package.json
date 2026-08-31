@@ -1,0 +1,12 @@
+{
+  "name": "card-games",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present && node scripts/build-site.mjs"
+  }
+}
