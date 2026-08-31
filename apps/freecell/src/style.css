@@ -1,0 +1,100 @@
+@import '@card-games/shared/table.css';
+
+/* FreeCell needs a smaller card so 8 tableau columns fit a phone screen. */
+#app .card,
+#app .card-back,
+#app .pile-slot {
+  width: 42px;
+  height: 60px;
+}
+
+#app .card {
+  padding: 2px 3px;
+}
+
+#app .card .rank-top,
+#app .card .rank-bottom {
+  font-size: 9px;
+}
+
+#app .card .suit-big {
+  font-size: 14px;
+}
+
+.table {
+  gap: 4px;
+  padding: 6px 6px 12px;
+}
+
+/* ---- Top row: free cells / foundations ---- */
+
+.top-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.top-row .pile-label {
+  font-size: 10px;
+  min-height: 12px;
+}
+
+.pile-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.freecell-row,
+.foundation-row {
+  display: flex;
+  gap: 5px;
+}
+
+/* ---- Tableau ---- */
+
+.tableau-row {
+  display: flex;
+  flex: 1;
+  gap: 3px;
+  padding-top: 4px;
+}
+
+.tableau-column {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.tableau-column .card {
+  margin-top: 0;
+}
+
+.tableau-column .card:not(:first-child) {
+  margin-top: -44px;
+}
+
+.tableau-column .pile-slot.empty {
+  width: 42px;
+  height: 60px;
+  border-radius: 6px;
+}
+
+.card.selected {
+  outline: 3px solid var(--accent);
+  outline-offset: -1px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+  z-index: 5;
+  position: relative;
+}
+
+.win-emoji {
+  font-size: 40px;
+  text-align: center;
+  margin-bottom: 6px;
+}
