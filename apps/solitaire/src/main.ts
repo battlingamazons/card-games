@@ -170,8 +170,12 @@ function tryMove(sel: Selection, target: PileTarget): boolean {
   return false; // foundation -> foundation is never meaningful
 }
 
-/** Double-tap: send a top card straight to its foundation, or failing that, any legal tableau spot. */
-function tryAutoMove(zone: 'waste' | 'tableau', index?: number): boolean {
+/**
+ * Double-tap: send the tapped card (and, if it's mid-run in the tableau, every card stacked on
+ * top of it) straight to its foundation, or failing that, any legal tableau spot. Only an actual
+ * single top card can go to a foundation; a multi-card run can only move to another tableau pile.
+ */
+function tryAutoMove(zone: 'waste' | 'tableau', index?: number, cardIndex?: number): boolean {
   if (zone === 'waste') {
     if (game.moveWasteToFoundation()) return true;
     for (let i = 0; i < snap.tableau.length; i++) {
@@ -179,12 +183,13 @@ function tryAutoMove(zone: 'waste' | 'tableau', index?: number): boolean {
     }
     return false;
   }
-  if (index === undefined) return false;
-  if (game.moveTableauToFoundation(index)) return true;
+  if (index === undefined || cardIndex === undefined) return false;
   const pile = snap.tableau[index];
+  const isSingleCard = cardIndex === pile.length - 1;
+  if (isSingleCard && game.moveTableauToFoundation(index)) return true;
   for (let i = 0; i < snap.tableau.length; i++) {
     if (i === index) continue;
-    if (game.moveTableauToTableau(index, pile.length - 1, i)) return true;
+    if (game.moveTableauToTableau(index, cardIndex, i)) return true;
   }
   return false;
 }
@@ -263,11 +268,17 @@ app.addEventListener('click', (e) => {
       if (wasteTop && wasteTop.id === id) {
         moved = tryAutoMove('waste');
       } else {
-        const colIndex = snap.tableau.findIndex((pile) => {
-          const top = pile[pile.length - 1];
-          return !!top && top.faceUp && top.card.id === id;
-        });
-        if (colIndex !== -1) moved = tryAutoMove('tableau', colIndex);
+        let colIndex = -1;
+        let cardIndex = -1;
+        for (let i = 0; i < snap.tableau.length; i++) {
+          const idx = snap.tableau[i].findIndex((c) => c.faceUp && c.card.id === id);
+          if (idx !== -1) {
+            colIndex = i;
+            cardIndex = idx;
+            break;
+          }
+        }
+        if (colIndex !== -1) moved = tryAutoMove('tableau', colIndex, cardIndex);
       }
       if (moved) {
         selection = null;
