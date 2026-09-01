@@ -4,6 +4,7 @@ import { SolitaireGame } from './game/engine';
 import type { Snapshot, TableauCard } from './game/types';
 
 const AUTO_STEP_DELAY_MS = 150;
+const DOUBLE_TAP_MS = 350;
 const SUITS: Suit[] = ['S', 'H', 'D', 'C'];
 
 type Selection =
@@ -19,6 +20,7 @@ const game = new SolitaireGame();
 let snap: Snapshot = game.getSnapshot();
 let selection: Selection | null = null;
 let autoRunning = false;
+let lastTap: { id: string; time: number } | null = null;
 
 function render() {
   snap = game.getSnapshot();
@@ -168,6 +170,25 @@ function tryMove(sel: Selection, target: PileTarget): boolean {
   return false; // foundation -> foundation is never meaningful
 }
 
+/** Double-tap: send a top card straight to its foundation, or failing that, any legal tableau spot. */
+function tryAutoMove(zone: 'waste' | 'tableau', index?: number): boolean {
+  if (zone === 'waste') {
+    if (game.moveWasteToFoundation()) return true;
+    for (let i = 0; i < snap.tableau.length; i++) {
+      if (game.moveWasteToTableau(i)) return true;
+    }
+    return false;
+  }
+  if (index === undefined) return false;
+  if (game.moveTableauToFoundation(index)) return true;
+  const pile = snap.tableau[index];
+  for (let i = 0; i < snap.tableau.length; i++) {
+    if (i === index) continue;
+    if (game.moveTableauToTableau(index, pile.length - 1, i)) return true;
+  }
+  return false;
+}
+
 function handleClick(candidate: Selection, target: PileTarget | null) {
   if (selection && selectionsEqual(selection, candidate)) {
     selection = null;
@@ -178,6 +199,7 @@ function handleClick(candidate: Selection, target: PileTarget | null) {
     const moved = tryMove(selection, target);
     if (moved) {
       selection = null;
+      lastTap = null; // the moved card is now elsewhere; don't let a stray fast tap on it there read as a double-tap
       render();
       return;
     }
@@ -209,12 +231,14 @@ app.addEventListener('click', (e) => {
     if (snap.moves === 0 || confirm('Start a new game? Current progress will be lost.')) {
       game.newGame();
       selection = null;
+      lastTap = null;
       render();
     }
     return;
   }
 
   if (el.closest('[data-action="auto-complete"]')) {
+    lastTap = null;
     runAutoComplete();
     return;
   }
@@ -222,8 +246,36 @@ app.addEventListener('click', (e) => {
   if (el.closest('[data-action="draw-stock"]')) {
     game.drawFromStock();
     selection = null;
+    lastTap = null;
     render();
     return;
+  }
+
+  const cardEl = el.closest<HTMLElement>('.card[data-card-id]');
+  if (cardEl) {
+    const id = cardEl.dataset.cardId!;
+    const now = Date.now();
+    const isDoubleTap = !!lastTap && lastTap.id === id && now - lastTap.time < DOUBLE_TAP_MS;
+    lastTap = isDoubleTap ? null : { id, time: now };
+    if (isDoubleTap) {
+      const wasteTop = snap.waste[snap.waste.length - 1];
+      let moved = false;
+      if (wasteTop && wasteTop.id === id) {
+        moved = tryAutoMove('waste');
+      } else {
+        const colIndex = snap.tableau.findIndex((pile) => {
+          const top = pile[pile.length - 1];
+          return !!top && top.faceUp && top.card.id === id;
+        });
+        if (colIndex !== -1) moved = tryAutoMove('tableau', colIndex);
+      }
+      if (moved) {
+        selection = null;
+        render();
+        return;
+      }
+      // Not an auto-movable top card, or no legal destination — fall through and treat as a normal tap.
+    }
   }
 
   const wasteEl = el.closest<HTMLElement>('[data-zone="waste"]');
