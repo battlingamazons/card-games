@@ -174,12 +174,20 @@ function tryMove(sel: Selection, target: PileTarget): boolean {
  * Double-tap: send the tapped card (and, if it's mid-run in the tableau, every card stacked on
  * top of it) straight to its foundation, or failing that, any legal tableau spot. Only an actual
  * single top card can go to a foundation; a multi-card run can only move to another tableau pile.
+ * A card already on a foundation can only go back out to a legal tableau spot.
  */
-function tryAutoMove(zone: 'waste' | 'tableau', index?: number, cardIndex?: number): boolean {
+function tryAutoMove(zone: 'waste' | 'tableau' | 'foundation', index?: number, cardIndex?: number, suit?: Suit): boolean {
   if (zone === 'waste') {
     if (game.moveWasteToFoundation()) return true;
     for (let i = 0; i < snap.tableau.length; i++) {
       if (game.moveWasteToTableau(i)) return true;
+    }
+    return false;
+  }
+  if (zone === 'foundation') {
+    if (suit === undefined) return false;
+    for (let i = 0; i < snap.tableau.length; i++) {
+      if (game.moveFoundationToTableau(suit, i)) return true;
     }
     return false;
   }
@@ -264,9 +272,12 @@ app.addEventListener('click', (e) => {
     lastTap = isDoubleTap ? null : { id, time: now };
     if (isDoubleTap) {
       const wasteTop = snap.waste[snap.waste.length - 1];
+      const foundationSuit = SUITS.find((s) => snap.foundationTops[s]?.id === id);
       let moved = false;
       if (wasteTop && wasteTop.id === id) {
         moved = tryAutoMove('waste');
+      } else if (foundationSuit) {
+        moved = tryAutoMove('foundation', undefined, undefined, foundationSuit);
       } else {
         let colIndex = -1;
         let cardIndex = -1;
