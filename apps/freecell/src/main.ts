@@ -134,8 +134,12 @@ function tryMove(sel: Selection, target: PileTarget): boolean {
   return game.moveTableauToFoundation(sel.index);
 }
 
-/** Double-tap: send a card straight to its foundation, or failing that, any legal tableau spot. */
-function tryAutoMove(zone: 'freecell' | 'tableau', index: number): boolean {
+/**
+ * Double-tap: send the tapped card (and, if it's mid-run in the tableau, every card stacked on
+ * top of it) straight to its foundation, or failing that, any legal tableau spot. Only an actual
+ * single top card can go to a foundation; a multi-card run can only move to another tableau pile.
+ */
+function tryAutoMove(zone: 'freecell' | 'tableau', index: number, cardIndex?: number): boolean {
   if (zone === 'freecell') {
     if (game.moveFreeCellToFoundation(index)) return true;
     for (let i = 0; i < snap.tableau.length; i++) {
@@ -143,11 +147,13 @@ function tryAutoMove(zone: 'freecell' | 'tableau', index: number): boolean {
     }
     return false;
   }
-  if (game.moveTableauToFoundation(index)) return true;
+  if (cardIndex === undefined) return false;
   const pile = snap.tableau[index];
+  const isSingleCard = cardIndex === pile.length - 1;
+  if (isSingleCard && game.moveTableauToFoundation(index)) return true;
   for (let i = 0; i < snap.tableau.length; i++) {
     if (i === index) continue;
-    if (game.moveTableauToTableau(index, pile.length - 1, i)) return true;
+    if (game.moveTableauToTableau(index, cardIndex, i)) return true;
   }
   return false;
 }
@@ -192,12 +198,23 @@ app.addEventListener('click', (e) => {
     lastTap = isDoubleTap ? null : { id, time: now };
     if (isDoubleTap) {
       const cellIndex = snap.freeCells.findIndex((c) => c?.id === id);
-      const colIndex = snap.tableau.findIndex((pile) => pile.length > 0 && pile[pile.length - 1].id === id);
+      let colIndex = -1;
+      let cardIndex = -1;
+      if (cellIndex === -1) {
+        for (let i = 0; i < snap.tableau.length; i++) {
+          const idx = snap.tableau[i].findIndex((c) => c.id === id);
+          if (idx !== -1) {
+            colIndex = i;
+            cardIndex = idx;
+            break;
+          }
+        }
+      }
       let moved = false;
       if (cellIndex !== -1) {
         moved = tryAutoMove('freecell', cellIndex);
       } else if (colIndex !== -1) {
-        moved = tryAutoMove('tableau', colIndex);
+        moved = tryAutoMove('tableau', colIndex, cardIndex);
       }
       if (moved) {
         selection = null;
