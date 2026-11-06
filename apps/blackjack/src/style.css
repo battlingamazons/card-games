@@ -1,0 +1,38 @@
+@import '@card-games/shared/table.css';
+
+:root {
+  --felt: #0b5a3a;
+  --felt-dark: #073a25;
+}
+
+#app { touch-action: manipulation; }
+
+.bj { gap: 8px; justify-content: flex-start; }
+
+.hand-block { display: flex; flex-direction: column; align-items: center; gap: 6px; padding-top: 6px; }
+.hand-label { font-size: 13px; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; }
+.hand-label b { color: var(--ink); font-size: 18px; margin-left: 4px; }
+
+.bj-row { display: flex; justify-content: center; min-height: 96px; width: 100%; padding: 2px 0; }
+.bj-row .card, .bj-row .card-back { width: 62px; height: 88px; margin-left: -24px; }
+.bj-row .card:first-child, .bj-row .card-back:first-child { margin-left: 0; }
+.bj-row.tight .card, .bj-row.tight .card-back { margin-left: -36px; }
+.bj-row.tight .card:first-child { margin-left: 0; }
+.bj-row.empty { border: 2px dashed rgba(255, 255, 255, 0.15); border-radius: 8px; width: 62px; margin: 0 auto; }
+.card.dealt { animation: deal-in 0.28s ease-out both; }
+@keyframes deal-in { from { transform: translateY(-24px) scale(0.9); opacity: 0; } to { transform: none; opacity: 1; } }
+
+.message { text-align: center; min-height: 26px; font-size: 18px; font-weight: 700; margin: 10px 0 4px; }
+.message.win { color: var(--accent); }
+.message.loss { color: #ff9a8f; }
+.message.push { color: var(--muted); }
+
+.bet-line { display: flex; align-items: center; justify-content: center; gap: 14px; color: var(--muted); font-size: 14px; margin-top: 8px; min-height: 44px; }
+.bet-line b { color: var(--ink); font-size: 22px; min-width: 40px; text-align: center; display: inline-block; }
+.bet-line .step { width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.1); color: var(--ink); font-size: 24px; line-height: 1; }
+
+.bj-actions { margin-top: auto; }
+.bj-actions button { flex: 1; max-width: 140px; }
+.bj-actions button.big { flex: 1.4; max-width: none; font-size: 18px; padding: 14px 20px; }
+.bj-actions .btn-accent { color: #2a2200; }
+.bj-actions button:disabled { opacity: 0.4; }
