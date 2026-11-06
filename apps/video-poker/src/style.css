@@ -1,0 +1,43 @@
+@import '@card-games/shared/table.css';
+
+:root {
+  --felt: #2a0d3a;
+  --felt-dark: #1a0626;
+}
+
+#app { touch-action: manipulation; }
+
+.poker { gap: 10px; justify-content: flex-start; }
+
+.paytable {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(212, 175, 55, 0.5);
+  border-radius: 10px;
+  padding: 6px 10px;
+  font-size: 13px;
+}
+.pay-row { display: flex; justify-content: space-between; padding: 2px 0; color: var(--muted); }
+.pay-row span:last-child { font-variant-numeric: tabular-nums; color: var(--accent); font-weight: 700; }
+.pay-row.win { background: var(--accent); color: #2a2200; border-radius: 4px; padding: 2px 6px; margin: 0 -6px; font-weight: 800; }
+.pay-row.win span:last-child { color: #2a2200; }
+
+.message { text-align: center; min-height: 24px; font-size: 16px; font-weight: 700; color: var(--ink); }
+.message.win { color: var(--accent); }
+
+.poker-hand { display: flex; justify-content: center; gap: 6px; padding: 14px 0 0; }
+.slot { position: relative; flex: 1 1 0; max-width: 72px; display: flex; flex-direction: column; align-items: center; }
+.poker-hand .card, .poker-hand .card-back { width: 100%; height: auto; aspect-ratio: 62 / 88; }
+.poker-hand .card .rank-top, .poker-hand .card .rank-bottom { font-size: clamp(13px, 4vw, 18px); }
+.poker-hand .card .suit-big { font-size: clamp(22px, 7vw, 32px); }
+.poker-hand .card.held { transform: translateY(-10px); box-shadow: 0 0 0 3px var(--accent), 0 4px 10px rgba(0, 0, 0, 0.5); }
+.held-tag { height: 16px; margin-top: 6px; font-size: 11px; font-weight: 800; color: var(--accent); letter-spacing: 0.08em; }
+.card.dealt { animation: deal-in 0.28s ease-out both; animation-delay: inherit; }
+@keyframes deal-in { from { transform: translateY(-24px) scale(0.9); opacity: 0; } to { transform: none; opacity: 1; } }
+
+.bet-line { text-align: center; color: var(--muted); font-size: 14px; }
+.bet-line b { color: var(--ink); font-size: 18px; }
+
+.poker-actions { margin-top: auto; }
+.poker-actions button { flex: 1; max-width: 140px; }
+.poker-actions button.big { max-width: none; font-size: 18px; padding: 14px 20px; }
+.poker-actions .btn-accent { color: #2a2200; }
