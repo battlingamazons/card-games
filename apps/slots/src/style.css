@@ -1,0 +1,39 @@
+@import '@card-games/shared/table.css';
+
+:root {
+  --felt: #5a1220;
+  --felt-dark: #2a0810;
+}
+
+#app { touch-action: manipulation; }
+.slots { gap: 10px; justify-content: flex-start; }
+
+.paytable { background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(212, 175, 55, 0.5); border-radius: 10px; padding: 6px 10px; font-size: 13px; }
+.pay-row { display: flex; justify-content: space-between; align-items: center; padding: 2px 0; color: var(--muted); }
+.pay-row span:last-child { color: var(--accent); font-weight: 700; font-variant-numeric: tabular-nums; }
+.pay-row .mini { display: inline-block; font-size: 14px; min-width: 34px; text-align: center; }
+.pay-row .mini.bar { font-size: 10px; padding: 1px 3px; }
+.pay-row .mini.seven { font-size: 16px; }
+
+.machine { position: relative; display: flex; justify-content: center; gap: 8px; padding: 12px; margin: 4px auto 0; background: #1c0509; border: 3px solid var(--accent); border-radius: 16px; box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.8); }
+.machine.win { animation: flash 0.5s ease-in-out 3; }
+@keyframes flash { 50% { box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.8), 0 0 26px 6px rgba(212, 175, 55, 0.9); } }
+.reel { position: relative; width: 92px; height: 228px; overflow: hidden; background: #fdfdfb; border-radius: 8px; border: 2px solid #000; }
+.reel::after { content: ''; position: absolute; inset: 0; background: linear-gradient(#000a, transparent 28%, transparent 72%, #000a); pointer-events: none; }
+.reel-strip { position: absolute; left: 0; right: 0; top: 76px; height: 76px; }
+.row { position: absolute; left: 0; right: 0; top: 0; height: 76px; display: flex; align-items: center; justify-content: center; will-change: transform; }
+.sym { font-size: 44px; line-height: 1; }
+.sym.bar { font-size: 22px; font-weight: 900; color: #d4af37; background: #1a1a1a; padding: 6px 12px; border-radius: 6px; letter-spacing: 0.08em; }
+.sym.seven { font-size: 60px; font-weight: 900; color: #c0102a; font-family: Georgia, serif; text-shadow: 0 2px 0 #7a0a1a; }
+.payline { position: absolute; left: 6px; right: 6px; top: 50%; height: 3px; margin-top: -1px; background: rgba(212, 175, 55, 0.85); pointer-events: none; z-index: 2; }
+
+.message { text-align: center; min-height: 26px; font-size: 18px; font-weight: 700; margin-top: 8px; }
+.message.win { color: var(--accent); }
+.bet-line { display: flex; align-items: center; justify-content: center; gap: 12px; color: var(--muted); font-size: 14px; min-height: 44px; }
+.bet-line b { color: var(--ink); font-size: 22px; }
+.bet-line .step { width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.1); color: var(--ink); font-size: 24px; line-height: 1;  }
+.bet-line .step:disabled { opacity: 0.4; }
+
+.slot-actions { margin-top: auto; }
+.slot-actions button.big { flex: 1; font-size: 20px; padding: 16px 20px; color: #2a2200; }
+.slot-actions button:disabled { opacity: 0.5; }

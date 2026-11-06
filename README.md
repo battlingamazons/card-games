@@ -13,6 +13,7 @@ Each game works offline once loaded and can be added to your phone's Home Screen
 - **[FreeCell](https://battlingamazons.github.io/card-games/freecell/)** — all 52 cards dealt face up with four free cells; almost every deal is winnable.
 - **[Video Poker](https://battlingamazons.github.io/card-games/video-poker/)** — Jacks or Better five-card draw with a saved credit bank.
 - **[Blackjack](https://battlingamazons.github.io/card-games/blackjack/)** — beat the dealer to 21, with double down, 3:2 on blackjack and a saved credit bank.
+- **[Slots](https://battlingamazons.github.io/card-games/slots/)** — three-reel slot machine with a saved credit bank.
 
 ## Project structure
 
@@ -26,6 +27,7 @@ apps/
   freecell/    Vite + vite-plugin-pwa app
   video-poker/ Vite + vite-plugin-pwa app
   blackjack/   Vite + vite-plugin-pwa app
+  slots/       Vite + vite-plugin-pwa app
 packages/
   shared/      shared Card model, rendering helpers, table.css, and icon generation
 ```
@@ -36,7 +38,7 @@ Each game is a self-contained PWA (installable, offline-capable) sharing only th
 
 ```
 npm install
-npm run dev --workspace=gin-rummy   # or solitaire / freecell / video-poker / blackjack
+npm run dev --workspace=gin-rummy   # or solitaire / freecell / video-poker / blackjack / slots
 ```
 
 ## Building
