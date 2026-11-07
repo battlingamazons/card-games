@@ -15,6 +15,7 @@ Each game works offline once loaded and can be added to your phone's Home Screen
 - **[Blackjack](https://battlingamazons.github.io/card-games/blackjack/)** — beat the dealer to 21, with double down, 3:2 on blackjack and a saved credit bank.
 - **[Slots](https://battlingamazons.github.io/card-games/slots/)** — three-reel slot machine with a saved credit bank.
 - **[Roulette](https://battlingamazons.github.io/card-games/roulette/)** — European single-zero wheel with a full betting layout and a saved credit bank.
+- **[Keno](https://battlingamazons.github.io/card-games/keno/)** — pick up to 10 of 80 numbers, the machine draws 20; saved credit bank.
 
 ## Project structure
 
@@ -30,6 +31,7 @@ apps/
   blackjack/   Vite + vite-plugin-pwa app
   slots/       Vite + vite-plugin-pwa app
   roulette/    Vite + vite-plugin-pwa app
+  keno/        Vite + vite-plugin-pwa app
 packages/
   shared/      shared Card model, rendering helpers, table.css, and icon generation
 ```
@@ -40,7 +42,7 @@ Each game is a self-contained PWA (installable, offline-capable) sharing only th
 
 ```
 npm install
-npm run dev --workspace=gin-rummy   # or solitaire / freecell / video-poker / blackjack / slots / roulette
+npm run dev --workspace=gin-rummy   # or solitaire / freecell / video-poker / blackjack / slots / roulette / keno
 ```
 
 ## Building

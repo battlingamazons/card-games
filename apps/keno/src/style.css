@@ -1,0 +1,46 @@
+@import '@card-games/shared/table.css';
+
+:root {
+  --felt: #0e2f6a;
+  --felt-dark: #061a3d;
+}
+
+#app { touch-action: manipulation; }
+.keno { gap: 8px; justify-content: flex-start; padding: 4px 8px 10px; }
+
+.message { text-align: center; min-height: 24px; font-size: 16px; font-weight: 700; margin-top: 2px; }
+.message.win { color: var(--accent); }
+
+.board { display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; padding: 6px; background: #06163a; border: 2px solid var(--accent); border-radius: 10px; }
+.ball { position: relative; aspect-ratio: 1 / 1.1; padding: 0; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.25); background: #16306a; color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.ball:disabled { opacity: 1; }
+.ball:active { filter: brightness(1.4); }
+.ball.picked { border: 2px solid var(--accent); background: #1e3f8a; box-shadow: 0 0 0 1px #000 inset; }
+.ball.drawn { background: #3a7be0; border-color: #9cc0ff; }
+.ball.hit { background: #2fa84f; border: 2px solid var(--accent); font-size: 17px; color: #fff; }
+.ball.hit i { position: absolute; bottom: 1px; right: 3px; font-size: 8px; font-style: normal; opacity: 0.85; }
+.ball.latest { animation: pop 0.2s ease-out; }
+@keyframes pop { from { transform: scale(1.45); } to { transform: scale(1); } }
+
+.paytable { background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(212, 175, 55, 0.5); border-radius: 10px; padding: 6px 10px; min-height: 72px; }
+.pay-title { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+.pay-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.pay-empty { color: var(--muted); font-size: 12px; padding: 6px 0; }
+.pay-cell { display: flex; flex-direction: column; align-items: center; min-width: 50px; padding: 2px 6px; border-radius: 6px; background: rgba(255, 255, 255, 0.06); font-size: 11px; color: var(--muted); }
+.pay-cell b { color: var(--accent); font-size: 14px; }
+.pay-cell.hot { background: var(--accent); color: #2a2200; }
+.pay-cell.hot b { color: #2a2200; }
+
+.chips { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.chip-btn { width: 44px; height: 44px; border-radius: 50%; border: 3px dashed rgba(255, 255, 255, 0.7); background: #2a5fb8; color: #fff; font-weight: 800; font-size: 14px; }
+.chip-btn:nth-child(2) { background: #b32a3a; }
+.chip-btn:nth-child(3) { background: #1b6b3a; }
+.chip-btn:nth-child(4) { background: #3a2a55; }
+.chip-btn.sel { border-style: solid; border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); }
+.chip-btn:disabled { opacity: 0.5; }
+.staked { margin-left: 6px; font-size: 13px; color: var(--muted); }
+
+.keno-actions { margin-top: auto; }
+.keno-actions button { flex: 1; max-width: 120px; }
+.keno-actions button.big { flex: 2; max-width: none; font-size: 18px; padding: 14px 20px; color: #2a2200; }
+.keno-actions button:disabled { opacity: 0.4; }
