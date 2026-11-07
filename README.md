@@ -16,6 +16,7 @@ Each game works offline once loaded and can be added to your phone's Home Screen
 - **[Slots](https://battlingamazons.github.io/card-games/slots/)** — three-reel slot machine with a saved credit bank.
 - **[Roulette](https://battlingamazons.github.io/card-games/roulette/)** — European single-zero wheel with a full betting layout and a saved credit bank.
 - **[Keno](https://battlingamazons.github.io/card-games/keno/)** — pick up to 10 of 80 numbers, the machine draws 20; saved credit bank.
+- **[Invaders](https://battlingamazons.github.io/card-games/invaders/)** — a fixed-shooter arcade game with asteroid cover, a bonus ship, waves and touch controls.
 
 ## Project structure
 
@@ -32,6 +33,7 @@ apps/
   slots/       Vite + vite-plugin-pwa app
   roulette/    Vite + vite-plugin-pwa app
   keno/        Vite + vite-plugin-pwa app
+  invaders/    Vite + vite-plugin-pwa app (canvas game)
 packages/
   shared/      shared Card model, rendering helpers, table.css, and icon generation
 ```
@@ -42,7 +44,7 @@ Each game is a self-contained PWA (installable, offline-capable) sharing only th
 
 ```
 npm install
-npm run dev --workspace=gin-rummy   # or solitaire / freecell / video-poker / blackjack / slots / roulette / keno
+npm run dev --workspace=gin-rummy   # or solitaire / freecell / video-poker / blackjack / slots / roulette / keno / invaders
 ```
 
 ## Building

@@ -1,0 +1,42 @@
+@import '@card-games/shared/table.css';
+
+:root {
+  --felt: #000;
+  --felt-dark: #000;
+}
+
+html, body { background: #000; }
+#app { touch-action: none; -webkit-touch-callout: none; }
+.inv { background: #000; gap: 4px; padding: 6px 8px 10px; align-items: center; justify-content: flex-start; font-family: ui-monospace, Menlo, monospace; }
+
+.hud { display: flex; align-items: flex-end; justify-content: space-between; width: 100%; max-width: 520px; gap: 8px; }
+.hud-cell { display: flex; flex-direction: column; font-size: 10px; color: #7fe8ff; letter-spacing: 0.1em; }
+.hud-cell b { color: #fff; font-size: 18px; letter-spacing: 0.05em; }
+.hud .icon-btn { font-size: 11px; white-space: nowrap; }
+.lives { align-self: flex-start; color: #4ad0ff; font-size: 14px; min-height: 18px; letter-spacing: 0.1em; }
+
+.screen { position: relative; border: 1px solid #1a2630; }
+.screen canvas { display: block; background: #000; image-rendering: pixelated; }
+.overlay { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(0, 0, 0, 0.72); text-align: center; }
+.ov-box { padding: 16px; max-width: 90%; }
+.ov-box h1 { margin: 0 0 8px; font-size: 28px; color: #4ad0ff; letter-spacing: 0.12em; }
+.ov-box p { margin: 6px 0; color: #cfd8dc; font-size: 13px; line-height: 1.4; }
+.ov-box .final b { font-size: 24px; color: #fff; }
+.ov-box .best { color: #ffe65a; }
+.pts { display: flex; justify-content: center; gap: 12px; margin: 12px 0 16px; color: #fff; font-size: 13px; }
+.pts .u { color: #ff5a7a; }
+.pt-spr { width: 24px; height: 16px; vertical-align: middle; object-fit: contain; }
+.ov-banner { color: #4ad0ff; font-size: 20px; font-weight: 800; letter-spacing: 0.1em; }
+.overlay:has(.ov-banner) { background: transparent; }
+
+.pad { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 520px; margin-top: auto; padding: 6px 4px 0; gap: 12px; }
+.pad-move { display: flex; gap: 12px; }
+.pad-btn { width: 84px; height: 84px; border-radius: 18px; border: 2px solid #2b5a6e; background: #0f2430; color: #4ad0ff; font-size: 30px; font-weight: 800; touch-action: none; user-select: none; -webkit-user-select: none; }
+.pad-btn.down { background: #1c4d66; transform: scale(0.96); }
+.pad-btn.fire { width: 128px; font-size: 20px; letter-spacing: 0.1em; border-color: #8a2b2b; background: #2a1010; color: #ff6a6a; }
+.pad-btn.fire.down { background: #6a1c1c; }
+
+.ov-box button { border: none; border-radius: 12px; padding: 14px 28px; font-size: 18px; font-weight: 800; background: var(--accent); color: #2a2200; margin-top: 8px; }
+.ov-box button:active { transform: scale(0.97); }
+.overlay { background: rgba(0, 0, 0, 0.86); }
+.overlay:has(.ov-banner) { background: transparent; }
