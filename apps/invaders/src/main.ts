@@ -40,9 +40,9 @@ app.innerHTML = `
       <div class="overlay" id="overlay"></div>
     </div>
     <div class="pad">
-      <div class="pad-move">
-        <button class="pad-btn" data-hold="left" aria-label="Move left">◀</button>
-        <button class="pad-btn" data-hold="right" aria-label="Move right">▶</button>
+      <div class="stick-zone" id="stick" aria-label="Drag left or right to steer">
+        <div class="stick-hint" id="stick-hint">◀ &nbsp;drag to steer&nbsp; ▶</div>
+        <div class="stick-base" id="stick-base"><div class="stick-knob" id="stick-knob"></div></div>
       </div>
       <button class="pad-btn fire" data-hold="fire" aria-label="Fire">FIRE</button>
     </div>
@@ -207,7 +207,7 @@ function updateOverlay() {
   let html = '';
   if (g.phase === 'title') {
     html = `<div class="ov-box"><h1>INVADERS</h1>
-      <p>Hold ◀ ▶ to move, hold FIRE to shoot.<br>Clear every wave. Hide behind the boulders.</p>
+      <p>Slide a thumb left or right to steer.<br>Hold FIRE with the other to shoot.<br>Clear every wave. Hide behind the boulders.</p>
       <div class="pts"><span>${spriteImg(0)} = 30</span><span>${spriteImg(1)} = 20</span><span>${spriteImg(2)} = 10</span><span class="u">BONUS = ?</span></div>
       <button class="btn-accent big" data-start>Tap to start</button></div>`;
   } else if (g.phase === 'over') {
@@ -260,6 +260,60 @@ for (const btn of document.querySelectorAll<HTMLButtonElement>('[data-hold]')) {
   btn.addEventListener('lostpointercapture', release);
 }
 
+// Floating analog stick: put a thumb down anywhere in the zone, then slide it left or right.
+// The ship's speed follows how far the thumb is from where it landed. Slide past the edge of the
+// ring and the ring follows, so reversing direction is always a short move.
+const STICK_RADIUS = 46;
+const STICK_DEAD = 0.1;
+const stickZone = el('stick');
+const stickBase = el('stick-base');
+const stickKnob = el('stick-knob');
+const stickHint = el('stick-hint');
+let stickId: number | null = null;
+let stickAnchor = 0;
+let stickMove = 0;
+
+function stickUpdate(clientX: number) {
+  let dx = clientX - stickAnchor;
+  if (Math.abs(dx) > STICK_RADIUS) {
+    stickAnchor = clientX - Math.sign(dx) * STICK_RADIUS;
+    dx = Math.sign(dx) * STICK_RADIUS;
+  }
+  const v = dx / STICK_RADIUS;
+  const mag = Math.abs(v);
+  stickMove = mag < STICK_DEAD ? 0 : Math.sign(v) * ((mag - STICK_DEAD) / (1 - STICK_DEAD));
+  const rect = stickZone.getBoundingClientRect();
+  stickBase.style.left = `${stickAnchor - rect.left}px`;
+  stickKnob.style.transform = `translate(calc(-50% + ${dx}px), -50%)`;
+}
+
+stickZone.addEventListener('pointerdown', (e) => {
+  if (stickId !== null) return;
+  e.preventDefault();
+  sound.unlock();
+  stickZone.setPointerCapture(e.pointerId);
+  stickId = e.pointerId;
+  stickAnchor = e.clientX;
+  const rect = stickZone.getBoundingClientRect();
+  stickBase.style.top = `${e.clientY - rect.top}px`;
+  stickBase.classList.add('on');
+  stickHint.classList.add('off');
+  stickUpdate(e.clientX);
+});
+stickZone.addEventListener('pointermove', (e) => {
+  if (e.pointerId === stickId) stickUpdate(e.clientX);
+});
+function stickEnd(e: PointerEvent) {
+  if (e.pointerId !== stickId) return;
+  stickId = null;
+  stickMove = 0;
+  stickBase.classList.remove('on');
+  stickHint.classList.remove('off');
+}
+stickZone.addEventListener('pointerup', stickEnd);
+stickZone.addEventListener('pointercancel', stickEnd);
+stickZone.addEventListener('lostpointercapture', stickEnd);
+
 overlay.addEventListener('click', (e) => {
   if ((e.target as HTMLElement).closest('[data-start]')) startGame();
 });
@@ -287,11 +341,15 @@ window.addEventListener('blur', () => {
   keys.clear();
   held.clear();
   pointerHold.clear();
+  stickId = null;
+  stickMove = 0;
+  stickBase.classList.remove('on');
+  stickHint.classList.remove('off');
 });
 
 function currentInput(): Input {
-  const on = (n: string) => held.has(n) || keys.has(n);
-  return { left: on('left'), right: on('right'), fire: on('fire') };
+  const keyMove = (keys.has('right') ? 1 : 0) - (keys.has('left') ? 1 : 0);
+  return { move: stickId !== null ? stickMove : keyMove, fire: held.has('fire') || keys.has('fire') };
 }
 
 // ---- main loop ----

@@ -46,8 +46,8 @@ export type GameEvent =
   | 'march3';
 
 export interface Input {
-  left: boolean;
-  right: boolean;
+  /** Horizontal steering from -1 (full left) to 1 (full right); fractions move proportionally slower. */
+  move: number;
   fire: boolean;
 }
 
@@ -209,7 +209,7 @@ export class InvadersGame {
   }
 
   private movePlayer(dt: number, input: Input) {
-    const dx = (input.right ? 1 : 0) - (input.left ? 1 : 0);
+    const dx = Math.max(-1, Math.min(1, input.move));
     this.playerX = Math.max(6, Math.min(W - 6 - PLAYER_W, this.playerX + dx * PLAYER_SPEED * dt));
     if (input.fire && !this.pBullet) {
       this.pBullet = { x: this.playerX + PLAYER_W / 2 - 1, y: PLAYER_Y - 6 };

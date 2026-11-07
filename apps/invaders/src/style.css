@@ -29,11 +29,16 @@ html, body { background: #000; }
 .ov-banner { color: #4ad0ff; font-size: 20px; font-weight: 800; letter-spacing: 0.1em; }
 .overlay:has(.ov-banner) { background: transparent; }
 
-.pad { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 520px; margin-top: auto; padding: 6px 4px 0; gap: 12px; }
-.pad-move { display: flex; gap: 12px; }
+.pad { display: flex; align-items: stretch; width: 100%; max-width: 520px; margin-top: 4px; padding: 0; gap: 12px; flex: 1; min-height: 150px; }
+.stick-zone { position: relative; flex: 1; border: 2px dashed #1f3a4a; border-radius: 22px; background: rgba(74, 208, 255, 0.04); touch-action: none; user-select: none; -webkit-user-select: none; overflow: hidden; }
+.stick-hint { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #4a7f96; font-size: 14px; letter-spacing: 0.06em; pointer-events: none; transition: opacity 0.15s; }
+.stick-hint.off { opacity: 0; }
+.stick-base { position: absolute; width: 96px; height: 96px; margin: -48px 0 0 -48px; border-radius: 50%; border: 2px solid #2b5a6e; background: rgba(74, 208, 255, 0.08); opacity: 0; pointer-events: none; }
+.stick-base.on { opacity: 1; }
+.stick-knob { position: absolute; left: 50%; top: 50%; width: 52px; height: 52px; border-radius: 50%; background: #4ad0ff; opacity: 0.85; transform: translate(-50%, -50%); box-shadow: 0 0 14px rgba(74, 208, 255, 0.6); }
 .pad-btn { width: 84px; height: 84px; border-radius: 18px; border: 2px solid #2b5a6e; background: #0f2430; color: #4ad0ff; font-size: 30px; font-weight: 800; touch-action: none; user-select: none; -webkit-user-select: none; }
 .pad-btn.down { background: #1c4d66; transform: scale(0.96); }
-.pad-btn.fire { width: 128px; font-size: 20px; letter-spacing: 0.1em; border-color: #8a2b2b; background: #2a1010; color: #ff6a6a; }
+.pad-btn.fire { width: 38%; height: auto; font-size: 20px; letter-spacing: 0.1em; border-color: #8a2b2b; background: #2a1010; color: #ff6a6a; }
 .pad-btn.fire.down { background: #6a1c1c; }
 
 .ov-box button { border: none; border-radius: 12px; padding: 14px 28px; font-size: 18px; font-weight: 800; background: var(--accent); color: #2a2200; margin-top: 8px; }

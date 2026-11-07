@@ -16,7 +16,7 @@ Each game works offline once loaded and can be added to your phone's Home Screen
 - **[Slots](https://battlingamazons.github.io/card-games/slots/)** — three-reel slot machine with a saved credit bank.
 - **[Roulette](https://battlingamazons.github.io/card-games/roulette/)** — European single-zero wheel with a full betting layout and a saved credit bank.
 - **[Keno](https://battlingamazons.github.io/card-games/keno/)** — pick up to 10 of 80 numbers, the machine draws 20; saved credit bank.
-- **[Invaders](https://battlingamazons.github.io/card-games/invaders/)** — a fixed-shooter arcade game with asteroid cover, a bonus ship, waves and touch controls.
+- **[Invaders](https://battlingamazons.github.io/card-games/invaders/)** — a fixed-shooter arcade game with asteroid cover, a bonus ship, waves and a floating thumb-stick plus fire button.
 
 ## Project structure
 
