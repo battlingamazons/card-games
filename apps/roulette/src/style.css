@@ -1,0 +1,45 @@
+@import '@card-games/shared/table.css';
+
+:root {
+  --felt: #0d5a38;
+  --felt-dark: #07351f;
+}
+
+#app { touch-action: manipulation; }
+.roulette { gap: 6px; justify-content: flex-start; padding: 4px 6px 10px; }
+
+.wheel-wrap { display: flex; justify-content: center; padding-top: 2px; }
+
+.history { display: flex; justify-content: center; gap: 4px; min-height: 22px; }
+.h { min-width: 24px; padding: 2px 4px; text-align: center; border-radius: 4px; font-size: 12px; font-weight: 800; color: #fff; }
+.n-red { background: #c0102a; }
+.n-black { background: #16171e; }
+.n-green { background: #1f8a3c; }
+
+.message { text-align: center; min-height: 24px; font-size: 16px; font-weight: 700; }
+.message.win { color: var(--accent); }
+
+.board { display: grid; grid-template-columns: 1.1fr repeat(12, 1fr) 1.3fr; grid-auto-rows: 38px; gap: 2px; padding: 4px; background: #0a2d1b; border: 2px solid var(--accent); border-radius: 8px; }
+.cell { position: relative; padding: 0; border: 1px solid rgba(255, 255, 255, 0.35); border-radius: 4px; color: #fff; font-size: 12px; font-weight: 700; background: transparent; display: flex; align-items: center; justify-content: center; }
+.cell:disabled { opacity: 1; }
+.cell.tone-red { background: #c0102a; }
+.cell.tone-black { background: #16171e; }
+.cell.tone-green { background: #1f8a3c; }
+.cell.tone-plain { background: rgba(255, 255, 255, 0.08); font-size: 11px; }
+.cell:active { filter: brightness(1.4); }
+.stack { position: absolute; right: -2px; top: -4px; min-width: 18px; padding: 1px 3px; border-radius: 9px; background: #fdfdfb; color: #1a1a1a; font-size: 10px; font-weight: 800; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6); border: 2px solid var(--accent); line-height: 1.1; z-index: 2; }
+
+.chips { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 4px; }
+.chip-btn { width: 44px; height: 44px; border-radius: 50%; border: 3px dashed rgba(255, 255, 255, 0.7); background: #2a5fb8; color: #fff; font-weight: 800; font-size: 14px; }
+.chip-btn:nth-child(2) { background: #b32a3a; }
+.chip-btn:nth-child(3) { background: #1b6b3a; }
+.chip-btn:nth-child(4) { background: #3a2a55; }
+.chip-btn.sel { border-style: solid; border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); }
+.chip-btn:disabled { opacity: 0.5; }
+.staked { margin-left: 8px; font-size: 13px; color: var(--muted); }
+.staked b { color: var(--ink); font-size: 16px; }
+
+.roulette-actions { margin-top: auto; }
+.roulette-actions button { flex: 1; max-width: 100px; }
+.roulette-actions button.big { flex: 1.6; max-width: none; font-size: 18px; padding: 14px 20px; color: #2a2200; }
+.roulette-actions button:disabled { opacity: 0.4; }
