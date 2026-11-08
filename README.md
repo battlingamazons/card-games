@@ -18,6 +18,7 @@ Each game works offline once loaded and can be added to your phone's Home Screen
 - **[Keno](https://battlingamazons.github.io/card-games/keno/)** — pick up to 10 of 80 numbers, the machine draws 20; saved credit bank.
 - **[Invaders](https://battlingamazons.github.io/card-games/invaders/)** — a fixed-shooter arcade game with asteroid cover, a bonus ship, waves and a floating thumb-stick plus fire button.
 - **[Air Hockey](https://battlingamazons.github.io/card-games/hockey/)** — drag-to-play air hockey against a computer rival that gets tougher with each win in a row.
+- **[Scratch-Offs](https://battlingamazons.github.io/card-games/scratch/)** — scratch lottery tickets with your finger, match three to win; saved credit bank and unfinished tickets.
 
 ## Project structure
 
@@ -36,6 +37,7 @@ apps/
   keno/        Vite + vite-plugin-pwa app
   invaders/    Vite + vite-plugin-pwa app (canvas game)
   hockey/       Vite + vite-plugin-pwa app (canvas game)
+  scratch/      Vite + vite-plugin-pwa app
 packages/
   shared/      shared Card model, rendering helpers, table.css, and icon generation
 ```
@@ -46,7 +48,7 @@ Each game is a self-contained PWA (installable, offline-capable) sharing only th
 
 ```
 npm install
-npm run dev --workspace=gin-rummy   # or solitaire / freecell / video-poker / blackjack / slots / roulette / keno / invaders / hockey
+npm run dev --workspace=gin-rummy   # or solitaire / freecell / video-poker / blackjack / slots / roulette / keno / invaders / hockey / scratch
 ```
 
 ## Building
