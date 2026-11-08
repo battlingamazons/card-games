@@ -1,0 +1,69 @@
+@import '@card-games/shared/table.css';
+
+:root {
+  --felt: #0f6a3a;
+  --felt-dark: #083d22;
+}
+
+#app { touch-action: manipulation; }
+.cr { gap: 8px; justify-content: flex-start; padding: 4px 8px 10px; }
+.hbtns { display: flex; gap: 6px; }
+
+.stage { display: flex; align-items: center; justify-content: center; gap: 22px; padding: 4px 0 0; }
+.dice { display: flex; gap: 14px; }
+.die { width: 58px; height: 58px; background: #fdfdfb; border-radius: 12px; border: 2px solid #c0102a; box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5); display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); padding: 7px; }
+.die i { width: 11px; height: 11px; border-radius: 50%; background: #1a1a1a; place-self: center; }
+.dice.tumble .die { animation: tumble 0.28s linear infinite; }
+.dice.tumble .die:nth-child(2) { animation-direction: reverse; animation-duration: 0.33s; }
+@keyframes tumble { 0% { transform: rotate(-12deg) translateY(-4px); } 50% { transform: rotate(14deg) translateY(2px); } 100% { transform: rotate(-12deg) translateY(-4px); } }
+
+.puck { width: 64px; height: 64px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 4px solid #fff; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5); }
+.puck.off { background: #1a1a1a; color: #fff; }
+.puck.on { background: #fdfdfb; color: #1a1a1a; border-color: #1a1a1a; }
+.puck small { font-size: 8px; letter-spacing: 0.08em; font-weight: 800; }
+.puck b { font-size: 22px; line-height: 1; }
+
+.history { display: flex; justify-content: center; gap: 4px; min-height: 22px; }
+.h { min-width: 22px; padding: 2px 4px; text-align: center; border-radius: 4px; font-size: 12px; font-weight: 800; background: rgba(255, 255, 255, 0.14); }
+.h.h7 { background: #b3352c; }
+
+.message { text-align: center; min-height: 24px; font-size: 18px; font-weight: 800; }
+.message.win { color: var(--accent); }
+.lines { text-align: center; font-size: 12px; color: var(--muted); min-height: 30px; line-height: 1.35; }
+
+.grid1, .grid2, .grid3, .places { display: grid; gap: 5px; }
+.grid2 { grid-template-columns: 1fr 1fr; }
+.grid3 { grid-template-columns: repeat(3, 1fr); }
+.places { grid-template-columns: repeat(6, 1fr); }
+
+.bet { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px 2px; min-height: 58px; border-radius: 12px; border: 2px solid rgba(255, 255, 255, 0.3); background: rgba(0, 0, 0, 0.25); color: var(--ink); }
+.bet b { font-size: 14px; }
+.bet small { font-size: 10px; color: var(--muted); margin-top: 1px; }
+.bet.line { min-height: 68px; }
+.bet.line b { font-size: 16px; }
+.bet.small b { font-size: 12px; }
+.bet.place { min-height: 64px; }
+.bet.place b { font-size: 20px; }
+.bet.place.ispoint { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent) inset; }
+.bet.field small { font-size: 9.5px; padding: 0 6px; text-align: center; }
+.bet.has { border-color: var(--accent); background: rgba(212, 175, 55, 0.18); }
+.bet:active:not(:disabled) { filter: brightness(1.4); }
+.bet:disabled { opacity: 0.45; }
+.bet:disabled.has { opacity: 1; }
+.stack { position: absolute; right: -2px; top: -7px; min-width: 20px; padding: 1px 5px; border-radius: 10px; background: #fdfdfb; color: #1a1a1a; font-size: 11px; font-weight: 800; border: 2px solid var(--accent); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6); line-height: 1.2; }
+
+.chips { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 2px; }
+.chip-btn { width: 42px; height: 42px; border-radius: 50%; border: 3px dashed rgba(255, 255, 255, 0.7); background: #2a5fb8; color: #fff; font-weight: 800; font-size: 14px; }
+.chip-btn:nth-child(2) { background: #b32a3a; }
+.chip-btn:nth-child(3) { background: #1b6b3a; }
+.chip-btn:nth-child(4) { background: #3a2a55; }
+.chip-btn.sel { border-style: solid; border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); }
+.chip-btn:disabled { opacity: 0.5; }
+.staked { margin-left: 8px; font-size: 13px; color: var(--muted); }
+.staked b { color: var(--ink); font-size: 16px; }
+
+.cr-actions { margin-top: auto; }
+.cr-actions button { flex: 1; max-width: 100px; }
+.cr-actions button.big { flex: 1.8; max-width: none; font-size: 18px; padding: 14px 20px; color: #2a2200; }
+.cr-actions button:disabled { opacity: 0.4; }
+.install-hint { font-size: 10px; }
