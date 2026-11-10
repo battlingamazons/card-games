@@ -17,6 +17,8 @@ Each game works offline once loaded and can be added to your phone's Home Screen
 - **[Roulette](https://battlingamazons.github.io/card-games/roulette/)** — European single-zero wheel with a full betting layout and a saved credit bank.
 - **[Keno](https://battlingamazons.github.io/card-games/keno/)** — pick up to 10 of 80 numbers, the machine draws 20; saved credit bank.
 - **[Invaders](https://battlingamazons.github.io/card-games/invaders/)** — a fixed-shooter arcade game with asteroid cover, a bonus ship, waves and a floating thumb-stick plus fire button.
+- **[Brick Bounce](https://battlingamazons.github.io/card-games/bricks/)** — drag-to-play brick breaker with power-ups, tougher levels and a saved best score.
+- **[Pillar Hop](https://battlingamazons.github.io/card-games/hop/)** — one-tap arcade game: flap a little bird through gaps in stone pillars, with a saved best score.
 - **[Air Hockey](https://battlingamazons.github.io/card-games/hockey/)** — drag-to-play air hockey against a computer rival that gets tougher with each win in a row.
 - **[Scratch-Offs](https://battlingamazons.github.io/card-games/scratch/)** — scratch lottery tickets with your finger, match three to win; saved credit bank and unfinished tickets.
 - **[Craps](https://battlingamazons.github.io/card-games/craps/)** — pass / don't pass with free odds, place bets, field and prop bets; saved credit bank and table.
@@ -37,6 +39,8 @@ apps/
   roulette/    Vite + vite-plugin-pwa app
   keno/        Vite + vite-plugin-pwa app
   invaders/    Vite + vite-plugin-pwa app (canvas game)
+  bricks/       Vite + vite-plugin-pwa app (canvas game)
+  hop/          Vite + vite-plugin-pwa app (canvas game)
   hockey/       Vite + vite-plugin-pwa app (canvas game)
   scratch/      Vite + vite-plugin-pwa app
   craps/        Vite + vite-plugin-pwa app
@@ -50,7 +54,7 @@ Each game is a self-contained PWA (installable, offline-capable) sharing only th
 
 ```
 npm install
-npm run dev --workspace=gin-rummy   # or solitaire / freecell / video-poker / blackjack / slots / roulette / keno / invaders / hockey / scratch / craps
+npm run dev --workspace=gin-rummy   # or solitaire / freecell / video-poker / blackjack / slots / roulette / keno / invaders / hockey / bricks / hop / scratch / craps
 ```
 
 ## Building
