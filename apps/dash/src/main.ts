@@ -105,7 +105,9 @@ function cloud(x: number, y: number, s: number, a: number) {
   ctx.fillStyle = `rgba(255,255,255,${a})`;
   ctx.beginPath();
   ctx.ellipse(x, y, 20 * s, 7 * s, 0, 0, Math.PI * 2);
+  ctx.moveTo((x - 10 * s) + (11 * s), y + 2 * s);
   ctx.ellipse(x - 10 * s, y + 2 * s, 11 * s, 6 * s, 0, 0, Math.PI * 2);
+  ctx.moveTo((x + 11 * s) + (12 * s), y + 2 * s);
   ctx.ellipse(x + 11 * s, y + 2 * s, 12 * s, 6 * s, 0, 0, Math.PI * 2);
   ctx.fill();
 }
