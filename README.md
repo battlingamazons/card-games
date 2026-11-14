@@ -20,6 +20,7 @@ Each game works offline once loaded and can be added to your phone's Home Screen
 - **[Brick Bounce](https://battlingamazons.github.io/card-games/bricks/)** — drag-to-play brick breaker with power-ups, tougher levels and a saved best score.
 - **[Pillar Hop](https://battlingamazons.github.io/card-games/hop/)** — one-tap arcade game: flap a little bird through gaps in stone pillars, with a saved best score.
 - **[Badge Busters](https://battlingamazons.github.io/card-games/cop/)** — a light-gun shooter reimagined as whack-a-mole: tap the crooks as they pop up, spare the civilians, collect donuts, manage your ammo. Three stages with bosses that loop and get harder.
+- **[Badge Busters 8-Bit](https://battlingamazons.github.io/card-games/cop8/)** and **[Badge Busters 16-Bit](https://battlingamazons.github.io/card-games/cop16/)** — the same game redrawn as pixel art (16-colour 8-bit look, and a detailed shaded 16-bit look). Each keeps its own saved best score.
 - **[Pocket Pal](https://battlingamazons.github.io/card-games/pet/)** — virtual pet: feed it, play with it and put it to bed. Hunger, happiness and energy change in real time and the pet is saved between visits.
 - **[Orchard Catch](https://battlingamazons.github.io/card-games/catch/)** — slide a basket to catch falling fruit; dodge rocks, chase golden apples and combos, with a saved best score.
 - **[Canyon Dash](https://battlingamazons.github.io/card-games/dash/)** — endless runner: jump, slide and leap pits through a desert canyon that cycles from dusk to noon to night.
@@ -44,6 +45,8 @@ apps/
   keno/        Vite + vite-plugin-pwa app
   invaders/    Vite + vite-plugin-pwa app (canvas game)
   bricks/       Vite + vite-plugin-pwa app (canvas game)
+  cop8/         Vite + vite-plugin-pwa app (8-bit art variant of cop/)
+  cop16/        Vite + vite-plugin-pwa app (16-bit art variant of cop/)
   cop/          Vite + vite-plugin-pwa app (canvas game)
   pet/          Vite + vite-plugin-pwa app (canvas game)
   catch/        Vite + vite-plugin-pwa app (canvas game)
@@ -62,7 +65,7 @@ Each game is a self-contained PWA (installable, offline-capable) sharing only th
 
 ```
 npm install
-npm run dev --workspace=gin-rummy   # or solitaire / freecell / video-poker / blackjack / slots / roulette / keno / invaders / hockey / bricks / hop / dash / catch / pet / cop / scratch / craps
+npm run dev --workspace=gin-rummy   # or solitaire / freecell / video-poker / blackjack / slots / roulette / keno / invaders / hockey / bricks / hop / dash / catch / pet / cop / cop8 / cop16 / scratch / craps
 ```
 
 ## Building
