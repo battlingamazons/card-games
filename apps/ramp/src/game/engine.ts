@@ -23,9 +23,9 @@ export const HOLES: Hole[] = [
   { x: 0, y: 0.42, r: 0.15, value: 30 },
   { x: -0.5, y: 0.6, r: 0.13, value: 40 },
   { x: 0.5, y: 0.6, r: 0.13, value: 40 },
-  { x: 0, y: 0.78, r: 0.11, value: 50 },
-  { x: -0.82, y: 0.9, r: 0.085, value: 100 },
-  { x: 0.82, y: 0.9, r: 0.085, value: 100 },
+  { x: 0, y: 0.78, r: 0.12, value: 50 },
+  { x: -0.82, y: 0.9, r: 0.095, value: 100 },
+  { x: 0.82, y: 0.9, r: 0.095, value: 100 },
 ];
 
 export interface Pop {
@@ -36,8 +36,12 @@ export interface Pop {
   life: number;
 }
 
-const PERIOD = 1.4; // power meter sweep time, up and back
 const MIN_SPEED = 0.67;
+/** Flick speed (game px/s, upward) that maps to the softest and hardest roll. */
+export const FLICK_MIN = 260;
+export const FLICK_MAX = 1500;
+/** Slower than this is not a flick; the ball stays where it is. */
+export const FLICK_NONE = 180;
 
 export class SkeeGame {
   phase: Phase = 'title';
@@ -52,10 +56,8 @@ export class SkeeGame {
 
   // aiming / lane
   laneX = 0; // -1..1
-  holding = false;
-  holdT = 0;
-  power = 0; // 0..1 while the meter runs
-  lastPower = 0;
+  dragging = false; // finger is on the ball
+  lat = 0; // sideways drift per unit of forward travel
   s = 0; // lane progress 0..1
   v = 0; // lane speed
   // air
@@ -77,7 +79,6 @@ export class SkeeGame {
   noteT = 0;
   onEvent: (e: GameEvent) => void = () => {};
   private acc = 0;
-  private tickT = 0;
 
   constructor() {
     try {
@@ -112,29 +113,63 @@ export class SkeeGame {
     this.earned = 0;
     this.newBest = false;
     this.laneX = 0;
+    this.s = 0;
+    this.dragging = false;
     this.pops = [];
     this.hit = null;
     this.deadFor = 0;
     this.onEvent('start');
   }
 
-  setLaneX(x: number) {
-    if (this.phase === 'aim') this.laneX = Math.max(-0.88, Math.min(0.88, x));
+  /** Finger is on the ball: it follows the finger (x across the lane, and a little way up). */
+  grab(x: number, s0: number) {
+    if (this.phase !== 'aim') return;
+    this.dragging = true;
+    this.drag(x, s0);
+  }
+  drag(x: number, s0: number) {
+    if (this.phase !== 'aim' || !this.dragging) return;
+    this.laneX = Math.max(-0.88, Math.min(0.88, x));
+    this.s = Math.max(0, Math.min(0.3, s0));
+  }
+  cancelDrag() {
+    this.dragging = false;
+    if (this.phase === 'aim') this.s = 0;
   }
 
-  press() {
-    if (this.phase !== 'aim' || this.holding) return;
-    this.holding = true;
-    this.holdT = 0;
-    this.power = 0;
+  /** Where a flick at this speed would land the ball, or null if it would not clear the ramp. */
+  predict(up: number, vx: number): { x: number; y: number } | null {
+    if (up < FLICK_NONE) return null;
+    const p = Math.max(0, Math.min(1, (up - FLICK_MIN) / (FLICK_MAX - FLICK_MIN)));
+    let v = 0.75 + p * 1.35;
+    const lat = Math.max(-0.7, Math.min(0.7, vx / up)) * 2;
+    let x = this.laneX;
+    let s = this.s;
+    for (let i = 0; i < 2400 && s < 1; i++) {
+      s += v * STEP;
+      v = Math.max(0.1, v - 0.1 * STEP);
+      x += lat * v * STEP;
+      if (Math.abs(x) > 0.95) {
+        x = Math.sign(x) * 0.95;
+        break; // keep the preview simple: a wall hit changes the path
+      }
+    }
+    if (v < MIN_SPEED + 0.02) return null;
+    return { x, y: Math.max(0.02, Math.min(1.35, (v - MIN_SPEED) * 0.889)) };
   }
 
-  release() {
-    if (this.phase !== 'aim' || !this.holding) return;
-    this.holding = false;
-    this.lastPower = this.power;
-    this.v = 0.75 + this.power * 1.35;
-    this.s = 0;
+  /** Finger lifted: up is the upward speed in game px/s, vx the sideways speed. */
+  flick(up: number, vx: number) {
+    if (this.phase !== 'aim' || !this.dragging) return;
+    this.dragging = false;
+    if (up < FLICK_NONE) {
+      this.s = 0;
+      this.say('FLICK IT!', 0.9);
+      return;
+    }
+    const p = Math.max(0, Math.min(1, (up - FLICK_MIN) / (FLICK_MAX - FLICK_MIN)));
+    this.v = 0.75 + p * 1.35;
+    this.lat = Math.max(-0.7, Math.min(0.7, vx / up)) * 2;
     this.phase = 'roll';
     this.ballsLeft--;
     this.onEvent('roll');
@@ -167,20 +202,16 @@ export class SkeeGame {
       case 'over':
         this.deadFor += dt;
         break;
-      case 'aim':
-        if (this.holding) {
-          this.holdT += dt;
-          const f = (this.holdT / PERIOD) % 1;
-          this.power = 1 - Math.abs(1 - 2 * f);
-          this.tickT -= dt;
-          if (this.tickT <= 0) {
-            this.tickT = 0.12;
-            this.onEvent('tick');
-          }
-        }
-        break;
       case 'roll': {
         this.s += this.v * dt;
+        this.laneX += this.lat * this.v * dt;
+        if (Math.abs(this.laneX) > 0.95) {
+          // bounces off the lane rail and loses a little speed
+          this.laneX = Math.sign(this.laneX) * 0.95;
+          this.lat = -this.lat * 0.6;
+          this.v *= 0.92;
+          this.onEvent('wall');
+        }
         this.v = Math.max(0.1, this.v - 0.1 * dt);
         if (this.s >= 1) this.launch();
         break;
@@ -233,7 +264,7 @@ export class SkeeGame {
       this.bvy = 0.45;
       // a ball that lands right in a hole drops straight in
       for (const h of HOLES) {
-        if (Math.hypot(this.bx - h.x, this.by - h.y) < h.r * 0.92) {
+        if (Math.hypot(this.bx - h.x, this.by - h.y) < h.r * 1.05) {
           this.bx = h.x;
           this.by = h.y;
           this.phase = 'board';
@@ -307,6 +338,7 @@ export class SkeeGame {
     if (this.ballsLeft > 0) {
       this.phase = 'aim';
       this.laneX = this.laneX * 0.5;
+      this.s = 0;
       return;
     }
     this.phase = 'over';

@@ -48,9 +48,6 @@ const boardX = (x: number) => BX + x * BHW;
 const laneSY = (s: number) => 304 - s * 120;
 const laneHW = (s: number) => 70 - 22 * s;
 const laneSX = (x: number, s: number) => 90 + x * laneHW(s);
-const METER = { x: 3, y: 190, w: 9, h: 122 };
-const meterY = (p: number) => METER.y + METER.h - p * METER.h;
-
 function text(s: string, x: number, y: number, size: number, fill: string, stroke = '#1a0a0a', align: CanvasTextAlign = 'center') {
   ctx.font = `800 ${size}px system-ui, -apple-system, sans-serif`;
   ctx.textAlign = align;
@@ -241,7 +238,7 @@ function drawLane() {
     ctx.fill();
   }
   // aim guide
-  if (g.phase === 'aim') {
+  if (g.phase === 'aim' && !g.dragging) {
     ctx.strokeStyle = 'rgba(255,255,255,0.35)';
     ctx.setLineDash([3, 5]);
     ctx.beginPath();
@@ -252,46 +249,12 @@ function drawLane() {
   }
   // ball on the lane
   if (g.phase === 'aim' || g.phase === 'roll') {
-    const s = g.phase === 'roll' ? g.s : 0;
+    const s = g.s;
     const x = laneSX(g.laneX, s);
     const y = laneSY(s);
     const r = 10 - 3.5 * s;
     ell(x + 2, y + r * 0.7, r * 0.9, r * 0.35, 'rgba(0,0,0,0.35)');
     ball(x, y, r);
-  }
-  drawMeter();
-}
-
-function drawMeter() {
-  const g = game;
-  rr(METER.x - 1, METER.y - 1, METER.w + 2, METER.h + 2, 4, '#0a0505');
-  const mg = ctx.createLinearGradient(0, METER.y + METER.h, 0, METER.y);
-  mg.addColorStop(0, '#3ac83a');
-  mg.addColorStop(0.55, '#f0d030');
-  mg.addColorStop(0.85, '#e8803a');
-  mg.addColorStop(1, '#e03a3a');
-  ctx.fillStyle = 'rgba(255,255,255,0.08)';
-  ctx.fillRect(METER.x, METER.y, METER.w, METER.h);
-  const p = g.phase === 'aim' && g.holding ? g.power : g.phase === 'roll' || g.phase === 'air' ? g.lastPower : 0;
-  if (p > 0) {
-    ctx.fillStyle = mg;
-    ctx.fillRect(METER.x, meterY(p), METER.w, METER.h * p);
-  }
-  // ticks for each scoring row
-  const marks: [number, string][] = [[0.225, '20'], [0.35, '30'], [0.5, '40'], [0.65, '50'], [0.75, '100']];
-  for (const [mp, lab] of marks) {
-    const y = meterY(mp);
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(METER.x + METER.w - 2, y - 0.5, 4, 1);
-    text(lab, METER.x + METER.w + 9, y, 6, '#ffe8b0', 'transparent', 'left');
-  }
-  if (g.phase === 'aim' && g.holding) {
-    ctx.fillStyle = '#fff';
-    ctx.beginPath();
-    ctx.moveTo(METER.x + METER.w + 1, meterY(p));
-    ctx.lineTo(METER.x + METER.w + 6, meterY(p) - 3);
-    ctx.lineTo(METER.x + METER.w + 6, meterY(p) + 3);
-    ctx.fill();
   }
 }
 
@@ -324,12 +287,14 @@ function draw() {
   drawLane();
   hud();
 
-  if (g.phase === 'aim' && !g.holding && g.ballsLeft === BALLS) {
-    text('SLIDE TO AIM', W / 2, 232, 10, '#fff');
-    text('HOLD TO CHARGE · RELEASE TO ROLL', W / 2, 246, 8, '#ffe8b0');
-  } else if (g.phase === 'aim' && !g.holding) {
-    text('hold & release', W / 2, 240, 9, 'rgba(255,255,255,0.8)');
+  if (g.phase === 'aim' && !g.dragging && g.ballsLeft === BALLS) {
+    text('PUT YOUR FINGER ON THE BALL', W / 2, 226, 9, '#fff');
+    text('AND FLICK IT UP THE LANE', W / 2, 240, 9, '#ffe8b0');
+    text('faster flick = farther', W / 2, 254, 8, '#d8a070', 'transparent');
+  } else if (g.phase === 'aim' && !g.dragging) {
+    text('flick the ball', W / 2, 240, 9, 'rgba(255,255,255,0.8)');
   }
+  drawPrediction();
 
   if (g.phase === 'title') {
     ctx.fillStyle = 'rgba(20,8,8,0.8)';
@@ -337,9 +302,9 @@ function draw() {
     text('RAMP', W / 2, 62, 34, '#ffe08a');
     text('ROLLERS', W / 2, 98, 30, '#ff9a6a');
     ball(W / 2, 150, 16);
-    text('Roll the ball up the lane,', W / 2, 190, 9, '#fff', 'transparent');
+    text('Flick the ball up the lane,', W / 2, 190, 9, '#fff', 'transparent');
     text('off the ramp and into the rings.', W / 2, 203, 9, '#fff', 'transparent');
-    text('Time your release - farther = higher score.', W / 2, 220, 8, '#d8a070', 'transparent');
+    text('Flick faster to send it farther.', W / 2, 220, 8, '#d8a070', 'transparent');
     if (Math.floor(g.t * 2.5) % 2) text('TAP TO START', W / 2, 262, 14, '#fff');
     if (g.best > 0) text(`best ${g.best}`, W / 2, 288, 10, '#ffd0a0');
   } else if (g.phase === 'over') {
@@ -368,6 +333,34 @@ function pos(e: PointerEvent) {
   return { x: ((e.clientX - r.left) / r.width) * W, y: ((e.clientY - r.top) / r.height) * H };
 }
 let activeId = -1;
+interface Sample {
+  t: number;
+  x: number;
+  y: number;
+}
+let samples: Sample[] = [];
+function sampleAt(e: PointerEvent) {
+  const p = pos(e);
+  samples.push({ t: performance.now(), x: p.x, y: p.y });
+  if (samples.length > 12) samples.shift();
+  return p;
+}
+/** Finger velocity in game px/s from the last ~100 ms of movement. */
+function fingerVelocity() {
+  const now = performance.now();
+  const recent = samples.filter((s) => now - s.t < 120);
+  if (recent.length < 2) return { up: 0, vx: 0 };
+  const a = recent[0];
+  const b = recent[recent.length - 1];
+  const dt = (b.t - a.t) / 1000;
+  if (dt <= 0.004) return { up: 0, vx: 0 };
+  // a finger that has stopped is not a flick
+  if (now - b.t > 100) return { up: 0, vx: 0 };
+  return { up: (a.y - b.y) / dt, vx: (b.x - a.x) / dt };
+}
+function laneFromScreen(x: number, y: number) {
+  return { lx: (x - 90) / 70, s0: (304 - y) / 120 };
+}
 canvas.addEventListener('pointerdown', (e) => {
   e.preventDefault();
   sound.unlock();
@@ -377,36 +370,61 @@ canvas.addEventListener('pointerdown', (e) => {
     renderBar();
     return;
   }
-  if (game.phase === 'aim' && y > 178) {
+  if (game.phase === 'aim' && y > 200 && activeId < 0) {
     activeId = e.pointerId;
-    game.setLaneX((x - 90) / 70);
-    game.press();
+    canvas.setPointerCapture(e.pointerId);
+    samples = [];
+    sampleAt(e);
+    const l = laneFromScreen(x, y);
+    game.grab(l.lx, l.s0);
   }
 });
 canvas.addEventListener('pointermove', (e) => {
   if (e.pointerId !== activeId) return;
-  game.setLaneX((pos(e).x - 90) / 70);
+  const p = sampleAt(e);
+  const l = laneFromScreen(p.x, p.y);
+  game.drag(l.lx, l.s0);
 });
 function up(e: PointerEvent) {
   if (e.pointerId !== activeId) return;
+  sampleAt(e);
+  const v = fingerVelocity();
   activeId = -1;
-  game.release();
+  samples = [];
+  if (e.type === 'pointercancel') game.cancelDrag();
+  else game.flick(v.up, v.vx);
 }
 canvas.addEventListener('pointerup', up);
 canvas.addEventListener('pointercancel', up);
-window.addEventListener('keydown', (e) => {
-  if (e.code === 'ArrowLeft') game.setLaneX(game.laneX - 0.08);
-  else if (e.code === 'ArrowRight') game.setLaneX(game.laneX + 0.08);
-  else if (e.code === 'Space' && !e.repeat) {
-    e.preventDefault();
-    sound.unlock();
-    if (game.phase === 'title' || game.phase === 'over') game.tap();
-    else game.press();
+
+/** Faint marker on the board showing where the ball would land at the current finger speed. */
+function drawPrediction() {
+  const g = game;
+  if (g.phase !== 'aim' || !g.dragging) return;
+  const v = fingerVelocity();
+  if (v.up < 250) return;
+  const pr = g.predict(v.up, v.vx);
+  if (!pr) {
+    text('TOO SOFT', W / 2, 190, 10, '#ff9a8a');
+    return;
   }
-});
-window.addEventListener('keyup', (e) => {
-  if (e.code === 'Space') game.release();
-});
+  const px = boardX(pr.x);
+  const py = boardY(Math.min(pr.y, 1));
+  const pulse = 1 + Math.sin(g.t * 14) * 0.15;
+  ctx.strokeStyle = pr.y > 1 ? 'rgba(255,150,120,0.95)' : 'rgba(255,255,255,0.95)';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([2, 2]);
+  ctx.beginPath();
+  ctx.arc(px, py, 7 * pulse, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.beginPath();
+  ctx.moveTo(px - 3, py);
+  ctx.lineTo(px + 3, py);
+  ctx.moveTo(px, py - 3);
+  ctx.lineTo(px, py + 3);
+  ctx.stroke();
+}
 document.addEventListener('contextmenu', (e) => e.preventDefault());
 
 el('mute').addEventListener('pointerdown', (e) => e.stopPropagation());
