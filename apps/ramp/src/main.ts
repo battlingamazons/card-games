@@ -1,5 +1,5 @@
 import './style.css';
-import { BALLS, HOLES, SkeeGame, H, W } from './game/engine';
+import { BALLS, HOLES, LANE_MIN_Y, SkeeGame, H, W, laneS } from './game/engine';
 import type { GameEvent } from './game/engine';
 import { Sound } from './sound';
 
@@ -47,7 +47,6 @@ const boardY = (y: number) => 170 - y * 120; // y: 0 (near) .. 1 (far)
 const boardX = (x: number) => BX + x * BHW;
 const laneSY = (s: number) => 304 - s * 120;
 const laneHW = (s: number) => 70 - 22 * s;
-const laneSX = (x: number, s: number) => 90 + x * laneHW(s);
 function text(s: string, x: number, y: number, size: number, fill: string, stroke = '#1a0a0a', align: CanvasTextAlign = 'center') {
   ctx.font = `800 ${size}px system-ui, -apple-system, sans-serif`;
   ctx.textAlign = align;
@@ -138,18 +137,21 @@ function drawBoard() {
     const bx = boardX(g.bx);
     const by = boardY(g.by);
     ell(bx + 1.5, by + 2, 5.5, 3, 'rgba(0,0,0,0.4)');
-    ball(bx, by, 6);
+    ball(bx, by, 6.5);
   } else if (g.phase === 'air') {
+    // starts exactly where the ball left the ramp (lane screen x), arcs onto the board
     const k = g.airT / g.airDur;
-    const x0 = boardX(g.fromX);
-    const y0 = 184;
+    const x0 = g.fromX;
+    const y0 = 187;
     const x1 = boardX(g.toX);
     const y1 = boardY(Math.min(g.toY, 1));
-    const bx = x0 + (x1 - x0) * k;
-    const by = y0 + (y1 - y0) * k;
-    const lift = Math.sin(k * Math.PI) * (18 + 30 * Math.min(1, g.toY));
-    ell(bx + 2, by + 3, 5 + 1.5 * Math.sin(k * Math.PI), 2.6, 'rgba(0,0,0,0.35)');
-    ball(bx, by - lift, 7 + 2 * Math.sin(k * Math.PI));
+    const e = k; // linear along the ground; the arc gives the lift
+    const bx = x0 + (x1 - x0) * e;
+    const by = y0 + (y1 - y0) * e;
+    const arc = Math.sin(k * Math.PI);
+    const lift = arc * (14 + 30 * Math.min(1, g.toY));
+    ell(bx + 2, by + 3, 5.5 + 1.5 * arc, 2.6, 'rgba(0,0,0,0.35)');
+    ball(bx, by - lift, 6.5 + 2.5 * arc);
   } else if (g.phase === 'settle' && g.hit) {
     // ball is in the hole; nothing to draw
   }
@@ -238,23 +240,20 @@ function drawLane() {
     ctx.fill();
   }
   // aim guide
-  if (g.phase === 'aim' && !g.dragging) {
+  if (g.phase === 'aim' && !g.dragging && g.py > 280) {
     ctx.strokeStyle = 'rgba(255,255,255,0.35)';
     ctx.setLineDash([3, 5]);
     ctx.beginPath();
-    ctx.moveTo(laneSX(g.laneX, 0), laneSY(0) - 10);
-    ctx.lineTo(laneSX(g.laneX, 1), laneSY(1));
+    ctx.moveTo(g.px, g.py - 12);
+    ctx.lineTo(g.px, 190);
     ctx.stroke();
     ctx.setLineDash([]);
   }
-  // ball on the lane
+  // ball on the lane: it is drawn exactly where the engine says (under your finger while dragging)
   if (g.phase === 'aim' || g.phase === 'roll') {
-    const s = g.s;
-    const x = laneSX(g.laneX, s);
-    const y = laneSY(s);
-    const r = 10 - 3.5 * s;
-    ell(x + 2, y + r * 0.7, r * 0.9, r * 0.35, 'rgba(0,0,0,0.35)');
-    ball(x, y, r);
+    const r = 10 - 3.5 * laneS(g.py);
+    ell(g.px + 2, g.py + r * 0.7, r * 0.9, r * 0.35, 'rgba(0,0,0,0.35)');
+    ball(g.px, g.py, r);
   }
 }
 
@@ -342,24 +341,19 @@ let samples: Sample[] = [];
 function sampleAt(e: PointerEvent) {
   const p = pos(e);
   samples.push({ t: performance.now(), x: p.x, y: p.y });
-  if (samples.length > 12) samples.shift();
+  if (samples.length > 16) samples.shift();
   return p;
 }
-/** Finger velocity in game px/s from the last ~100 ms of movement. */
+/** Finger velocity in game px/s from the last ~90 ms of movement (zero if the finger had stopped). */
 function fingerVelocity() {
   const now = performance.now();
-  const recent = samples.filter((s) => now - s.t < 120);
-  if (recent.length < 2) return { up: 0, vx: 0 };
+  const recent = samples.filter((s) => now - s.t < 90);
+  if (recent.length < 2) return { vx: 0, vy: 0 };
   const a = recent[0];
   const b = recent[recent.length - 1];
   const dt = (b.t - a.t) / 1000;
-  if (dt <= 0.004) return { up: 0, vx: 0 };
-  // a finger that has stopped is not a flick
-  if (now - b.t > 100) return { up: 0, vx: 0 };
-  return { up: (a.y - b.y) / dt, vx: (b.x - a.x) / dt };
-}
-function laneFromScreen(x: number, y: number) {
-  return { lx: (x - 90) / 70, s0: (304 - y) / 120 };
+  if (dt <= 0.004) return { vx: 0, vy: 0 };
+  return { vx: (b.x - a.x) / dt, vy: (b.y - a.y) / dt };
 }
 canvas.addEventListener('pointerdown', (e) => {
   e.preventDefault();
@@ -370,20 +364,23 @@ canvas.addEventListener('pointerdown', (e) => {
     renderBar();
     return;
   }
-  if (game.phase === 'aim' && y > 200 && activeId < 0) {
+  if ((game.phase === 'aim' || game.phase === 'roll') && y > LANE_MIN_Y - 10 && activeId < 0) {
+    if (game.phase === 'roll') return;
     activeId = e.pointerId;
     canvas.setPointerCapture(e.pointerId);
     samples = [];
     sampleAt(e);
-    const l = laneFromScreen(x, y);
-    game.grab(l.lx, l.s0);
+    game.grab(x, y);
   }
 });
 canvas.addEventListener('pointermove', (e) => {
   if (e.pointerId !== activeId) return;
-  const p = sampleAt(e);
-  const l = laneFromScreen(p.x, p.y);
-  game.drag(l.lx, l.s0);
+  // use every coalesced sample so the ball follows the finger's full path
+  const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : [];
+  for (const ce of evs.length ? evs : [e]) {
+    const p = sampleAt(ce);
+    game.dragTo(p.x, p.y);
+  }
 });
 function up(e: PointerEvent) {
   if (e.pointerId !== activeId) return;
@@ -392,19 +389,20 @@ function up(e: PointerEvent) {
   activeId = -1;
   samples = [];
   if (e.type === 'pointercancel') game.cancelDrag();
-  else game.flick(v.up, v.vx);
+  else game.release(v.vx, v.vy);
 }
 canvas.addEventListener('pointerup', up);
 canvas.addEventListener('pointercancel', up);
 
-/** Faint marker on the board showing where the ball would land at the current finger speed. */
+/** Faint marker on the board showing where the ball would land if you let go right now. */
 function drawPrediction() {
   const g = game;
   if (g.phase !== 'aim' || !g.dragging) return;
   const v = fingerVelocity();
-  if (v.up < 250) return;
-  const pr = g.predict(v.up, v.vx);
-  if (!pr) {
+  if (-v.vy < 220) return;
+  const pr = g.predict(v.vx, v.vy);
+  if (pr === null) return;
+  if (pr === 'soft') {
     text('TOO SOFT', W / 2, 190, 10, '#ff9a8a');
     return;
   }
